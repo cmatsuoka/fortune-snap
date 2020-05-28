@@ -1,0 +1,62 @@
+name: fortune-cm
+base: core18
+summary: Display a random fortune
+description: |
+  fortune is a command-line utility which displays a random quotation from a
+  collection of quotes. This collection is read from the local file system and
+  does not require network access.
+
+  This is a build of fortune-mod from from https://github.com/shlomif/fortune-mod.
+  It includes both inoffensive and offensive fortune databases, but the latter
+  will only be accessed when the `-o` parameter is specified.
+adopt-info: fortune
+
+grade: stable
+confinement: strict
+
+parts:
+  fortune:
+    plugin: cmake
+    source: https://github.com/shlomif/fortune-mod
+    source-type: git
+    source-subdir: fortune-mod
+    configflags:
+      - -DLOCALDIR=/usr/share/games/fortunes
+    after: [rinutils]
+    override-pull: |
+      snapcraftctl pull
+      version="$(cat $SNAPCRAFT_PART_SRC/fortune-mod/ver.txt)-$(git rev-parse --short HEAD)"
+      snapcraftctl set-version "$version"
+    build-packages:
+      - librecode-dev
+    stage-packages:
+      - librecode0
+
+  rinutils:
+    plugin: cmake
+    source: https://github.com/shlomif/rinutils
+    source-type: git
+    build-packages:
+      - build-essential
+      - pkg-config
+      - libcmocka-dev
+    prime:
+      - -include
+
+apps:
+  fortune:
+    command: games/fortune
+
+  strfile:
+    command: bin/strfile
+    plugs:
+      - home
+
+  unstr:
+    command: bin/unstr
+    plugs:
+      - home
+
+layout:
+  /usr/share/games/fortunes:
+    symlink: $SNAP/usr/share/games/fortunes
