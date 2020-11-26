@@ -16,6 +16,7 @@ confinement: strict
 
 parts:
   fortune:
+    after: [docmake]
     plugin: cmake
     source: https://github.com/shlomif/fortune-mod
     source-type: git
@@ -28,7 +29,10 @@ parts:
       version="$(cat $SNAPCRAFT_PART_SRC/fortune-mod/ver.txt)-$(git rev-parse --short HEAD)"
       snapcraftctl set-version "$version"
     build-packages:
+      - libpath-tiny-perl
       - librecode-dev
+      - xsltproc
+      - docbook-xsl
     stage-packages:
       - librecode0
 
@@ -42,6 +46,13 @@ parts:
       - libcmocka-dev
     prime:
       - -include
+
+  docmake:
+    plugin: nil
+    build-packages:
+      - cpanminus
+    override-build: |
+      cpanm App::XML::DocBook::Docmake
 
 apps:
   fortune:
