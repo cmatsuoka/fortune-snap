@@ -1,5 +1,6 @@
 name: fortune-cm
-base: core18
+version: 3.14.1
+base: core22
 summary: Display a random fortune
 description: |
   fortune is a command-line utility which displays a random quotation from a
@@ -9,25 +10,20 @@ description: |
   This is a build of fortune-mod from from https://github.com/shlomif/fortune-mod.
   It includes both inoffensive and offensive fortune databases, but the latter
   will only be accessed when the `-o` parameter is specified.
-adopt-info: fortune
 
 grade: stable
 confinement: strict
 
 parts:
   fortune:
-    after: [docmake]
+    after: [docmake, rinutils]
     plugin: cmake
-    source: https://github.com/shlomif/fortune-mod
-    source-type: git
+    source: https://github.com/shlomif/fortune-mod.git
+    source-tag: fortune-mod-3.14.1
     source-subdir: fortune-mod
-    configflags:
+    cmake-parameters:
+      - -DCMAKE_INSTALL_PREFIX=/usr
       - -DLOCALDIR=/usr/share/games/fortunes
-    after: [rinutils]
-    override-pull: |
-      snapcraftctl pull
-      version="$(cat $SNAPCRAFT_PART_SRC/fortune-mod/ver.txt)-$(git rev-parse --short HEAD)"
-      snapcraftctl set-version "$version"
     build-packages:
       - libpath-tiny-perl
       - librecode-dev
@@ -38,14 +34,15 @@ parts:
 
   rinutils:
     plugin: cmake
-    source: https://github.com/shlomif/rinutils
-    source-type: git
+    source: https://github.com/shlomif/rinutils.git
+    cmake-parameters:
+      - -DCMAKE_INSTALL_PREFIX=/usr
     build-packages:
       - build-essential
       - pkg-config
       - libcmocka-dev
     prime:
-      - -include
+      - -*
 
   docmake:
     plugin: nil
@@ -53,18 +50,20 @@ parts:
       - cpanminus
     override-build: |
       cpanm App::XML::DocBook::Docmake
+    prime:
+      - -*
 
 apps:
   fortune:
-    command: games/fortune
+    command: usr/games/fortune
 
   strfile:
-    command: bin/strfile
+    command: usr/bin/strfile
     plugs:
       - home
 
   unstr:
-    command: bin/unstr
+    command: usr/bin/unstr
     plugs:
       - home
 
