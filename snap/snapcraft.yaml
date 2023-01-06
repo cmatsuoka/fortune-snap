@@ -19,7 +19,7 @@ parts:
     after: [docmake, rinutils]
     plugin: cmake
     source: https://github.com/shlomif/fortune-mod.git
-    source-tag: fortune-mod-3.14.1
+    source-tag: fortune-mod-$SNAPCRAFT_PROJECT_VERSION
     source-subdir: fortune-mod
     cmake-parameters:
       - -DCMAKE_INSTALL_PREFIX=/usr
