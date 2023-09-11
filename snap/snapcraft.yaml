@@ -1,5 +1,5 @@
 name: fortune-cm
-version: 3.14.1
+version: 3.20.0
 base: core22
 summary: Display a random fortune
 description: |
